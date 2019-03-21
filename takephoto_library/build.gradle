@@ -19,7 +19,10 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    compileOnly 'com.soundcloud.android.crop:lib_crop:1.0.0'
+    compileOnly rootProject.ext.support["support-v4"]
+    compileOnly ('com.soundcloud.android.crop:lib_crop:1.0.0'){
+        exclude group: 'com.android.support'
+    }
     compileOnly 'top.zibin:Luban:1.1.8'
     compileOnly ('com.darsh.multipleimageselect:multipleimageselect:1.0.5'){
         exclude group: 'com.android.support'

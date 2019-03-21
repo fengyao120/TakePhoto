@@ -26,7 +26,9 @@ dependencies {
     implementation rootProject.ext.support["appcompat-v7"]
     implementation rootProject.ext.support["support-v4"]
 
-    implementation 'com.soundcloud.android.crop:lib_crop:1.0.0'
+    implementation ('com.soundcloud.android.crop:lib_crop:1.0.0'){
+        exclude group: 'com.android.support'
+    }
     implementation 'top.zibin:Luban:1.1.8'
     implementation ('com.darsh.multipleimageselect:multipleimageselect:1.0.5'){
         exclude group: 'com.android.support'
