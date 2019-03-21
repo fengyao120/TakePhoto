@@ -37,9 +37,9 @@ import java.io.File;
  */
 public class CustomHelper {
     private View rootView;
-    private RadioGroup rgCrop, rgCompress, rgFrom, rgCropSize, rgCropTool, rgShowProgressBar, rgPickTool, rgCompressTool, rgCorrectTool,
+    private RadioGroup rgCrop, rgCompress, rgFrom, rgCropSize, rgCropTool, rgShowProgressBar, rgPickTool, rgCorrectTool,
         rgRawFile;
-    private EditText etCropHeight, etCropWidth, etLimit, etSize, etHeightPx, etWidthPx;
+    private EditText etCropHeight, etCropWidth, etLimit;
 
     public static CustomHelper of(View rootView) {
         return new CustomHelper(rootView);
@@ -53,7 +53,6 @@ public class CustomHelper {
     private void init() {
         rgCrop = (RadioGroup) rootView.findViewById(R.id.rgCrop);
         rgCompress = (RadioGroup) rootView.findViewById(R.id.rgCompress);
-        rgCompressTool = (RadioGroup) rootView.findViewById(R.id.rgCompressTool);
         rgCropSize = (RadioGroup) rootView.findViewById(R.id.rgCropSize);
         rgFrom = (RadioGroup) rootView.findViewById(R.id.rgFrom);
         rgPickTool = (RadioGroup) rootView.findViewById(R.id.rgPickTool);
@@ -64,9 +63,6 @@ public class CustomHelper {
         etCropHeight = (EditText) rootView.findViewById(R.id.etCropHeight);
         etCropWidth = (EditText) rootView.findViewById(R.id.etCropWidth);
         etLimit = (EditText) rootView.findViewById(R.id.etLimit);
-        etSize = (EditText) rootView.findViewById(R.id.etSize);
-        etHeightPx = (EditText) rootView.findViewById(R.id.etHeightPx);
-        etWidthPx = (EditText) rootView.findViewById(R.id.etWidthPx);
 
 
 
@@ -136,25 +132,25 @@ public class CustomHelper {
             takePhoto.onEnableCompress(null, false);
             return;
         }
-        int maxSize = Integer.parseInt(etSize.getText().toString());
-        int width = Integer.parseInt(etCropWidth.getText().toString());
-        int height = Integer.parseInt(etHeightPx.getText().toString());
         boolean showProgressBar = rgShowProgressBar.getCheckedRadioButtonId() == R.id.rbShowYes ? true : false;
         boolean enableRawFile = rgRawFile.getCheckedRadioButtonId() == R.id.rbRawYes ? true : false;
-        CompressConfig config;
-        if (rgCompressTool.getCheckedRadioButtonId() == R.id.rbCompressWithOwn) {
-            config = new CompressConfig.Builder().setMaxSize(maxSize)
-                .setMaxPixel(width >= height ? width : height)
-                .enableReserveRaw(enableRawFile)
-                .create();
-        } else {
-            LubanOptions option = new LubanOptions.Builder().setMaxHeight(height).setMaxWidth(width).setMaxSize(maxSize).create();
-            config = CompressConfig.ofLuban(option);
-            config.enableReserveRaw(enableRawFile);
-        }
+
+
+        LubanOptions option = new LubanOptions.Builder().setTargetDir(getPath()).create();
+        CompressConfig config = CompressConfig.ofLuban(option);
+        config.enableReserveRaw(enableRawFile);
+
+
         takePhoto.onEnableCompress(config, showProgressBar);
+    }
 
-
+    private String getPath() {
+        String path = Environment.getExternalStorageDirectory() + "/TakePhotoLuban/";
+        File file = new File(path);
+        if (file.mkdirs()) {
+            return path;
+        }
+        return path;
     }
 
     private CropOptions getCropOptions() {

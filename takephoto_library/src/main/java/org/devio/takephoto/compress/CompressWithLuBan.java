@@ -7,21 +7,18 @@ import org.devio.takephoto.model.TImage;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
-import me.shaohui.advancedluban.Luban;
-import me.shaohui.advancedluban.OnCompressListener;
-import me.shaohui.advancedluban.OnMultiCompressListener;
+import top.zibin.luban.Luban;
+import top.zibin.luban.OnCompressListener;
 
-/**
- * 压缩照片,采用luban
- * Author: crazycodeboy
- * Date: 2016/11/5 0007 20:10
- * Version:4.0.0
- * 技术博文：http://www.devio.org/
- * GitHub:https://github.com/crazycodeboy
- * Email:crazycodeboy@gmail.com
- */
+
+ /**
+  * <pre>
+  * desc  : 改用官方库鲁班实现
+  * author: huangys
+  * date  : 2019/3/21
+  * </pre>
+  */
 public class CompressWithLuBan implements CompressImage {
     private ArrayList<TImage> images;
     private CompressListener listener;
@@ -57,62 +54,67 @@ public class CompressWithLuBan implements CompressImage {
     }
 
     private void compressOne() {
-        Luban.compress(context, files.get(0))
-            .putGear(Luban.CUSTOM_GEAR)
-            .setMaxHeight(options.getMaxHeight())
-            .setMaxWidth(options.getMaxWidth())
-            .setMaxSize(options.getMaxSize() / 1000)
-            .launch(new OnCompressListener() {
-                @Override
-                public void onStart() {
+        Luban.with(context)
+                .load(files.get(0))
+                .ignoreBy(options.getIgnoreSize())
+                .setTargetDir(options.getTargetDir())
+                .setCompressListener(new OnCompressListener() {
+                    @Override
+                    public void onStart() { }
 
-                }
+                    @Override
+                    public void onSuccess(File file) {
+                        TImage image = images.get(0);
+                        image.setCompressPath(file.getPath());
+                        image.setCompressed(true);
+                        listener.onCompressSuccess(images);
+                    }
 
-                @Override
-                public void onSuccess(File file) {
-                    TImage image = images.get(0);
-                    image.setCompressPath(file.getPath());
-                    image.setCompressed(true);
-                    listener.onCompressSuccess(images);
-                }
-
-                @Override
-                public void onError(Throwable e) {
-                    listener.onCompressFailed(images, e.getMessage() + " is compress failures");
-                }
-            });
+                    @Override
+                    public void onError(Throwable e) {
+                        listener.onCompressFailed(images, e.getMessage() + " is compress failures");
+                    }
+                }).launch();
     }
 
+    private int compressTime = 0;//压缩执行次数
     private void compressMulti() {
-        Luban.compress(context, files)
-            .putGear(Luban.CUSTOM_GEAR)
-            .setMaxSize(options.getMaxSize() / 1000)                // limit the final image size（unit：Kb）
-            .setMaxHeight(options.getMaxHeight())             // limit image height
-            .setMaxWidth(options.getMaxWidth())
-            .launch(new OnMultiCompressListener() {
-                @Override
-                public void onStart() {
+        compressTime = 0;
+        Luban.with(context)
+                .load(files)
+                .ignoreBy(options.getIgnoreSize())
+                .setTargetDir(options.getTargetDir())
+                .setCompressListener(new OnCompressListener() {
+                    @Override
+                    public void onStart() {
+                        compressTime++;
+                    }
 
-                }
+                    @Override
+                    public void onSuccess(File file) {
+                        handleCompressCallBack(file);
+                    }
 
-                @Override
-                public void onSuccess(List<File> fileList) {
-                    handleCompressCallBack(fileList);
-                }
-
-                @Override
-                public void onError(Throwable e) {
-                    listener.onCompressFailed(images, e.getMessage() + " is compress failures");
-                }
-            });
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+                }).launch();
     }
 
-    private void handleCompressCallBack(List<File> files) {
-        for (int i = 0, j = images.size(); i < j; i++) {
-            TImage image = images.get(i);
-            image.setCompressed(true);
-            image.setCompressPath(files.get(i).getPath());
+    private void handleCompressCallBack(File file) {
+        TImage image = images.get(compressTime - 1);
+        image.setCompressed(true);
+        image.setCompressPath(file.getPath());
+
+        if(compressTime >= images.size()) {//压缩次数等于图片数，表示压缩完成
+            for(TImage temp:images){
+                if (!temp.isCompressed()) {//存在一张未压缩的图片，则调用压缩失败
+                    listener.onCompressFailed(images, "存在压缩失败的图片");
+                    return;
+                }
+            }
+            listener.onCompressSuccess(images);
         }
-        listener.onCompressSuccess(images);
     }
 }

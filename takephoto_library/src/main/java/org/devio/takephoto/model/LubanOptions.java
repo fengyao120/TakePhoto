@@ -3,47 +3,34 @@ package org.devio.takephoto.model;
 import java.io.Serializable;
 
 /**
- * Luban配置类
- * Author: crazycodeboy
- * Date: 2016/11/5 0007 20:10
- * Version:4.0.1
- * 技术博文：http://www.devio.org/
- * GitHub:https://github.com/crazycodeboy
- * Email:crazycodeboy@gmail.com
+ * <pre>
+ * desc  : 改用官方库鲁班实现
+ * author: huangys
+ * date  : 2019/3/21
+ * </pre>
  */
 public class LubanOptions implements Serializable {
-    /**
-     * 压缩到的最大大小，单位B
-     */
-    private int maxSize;
-    private int maxHeight;
-    private int maxWidth;
+    /**不压缩的阈值，单位为K*/
+    private int ignoreSize = 100;
+    private String targetDir;
 
     private LubanOptions() {
     }
 
-    public int getMaxSize() {
-        return maxSize;
+    public int getIgnoreSize() {
+        return ignoreSize;
     }
 
-    public void setMaxSize(int maxSize) {
-        this.maxSize = maxSize;
+    public void setIgnoreSize(int ignoreSize) {
+        this.ignoreSize = ignoreSize;
     }
 
-    public int getMaxHeight() {
-        return maxHeight;
+    public String getTargetDir() {
+        return targetDir;
     }
 
-    public void setMaxHeight(int maxHeight) {
-        this.maxHeight = maxHeight;
-    }
-
-    public int getMaxWidth() {
-        return maxWidth;
-    }
-
-    public void setMaxWidth(int maxWidth) {
-        this.maxWidth = maxWidth;
+    public void setTargetDir(String targetDir) {
+        this.targetDir = targetDir;
     }
 
     public static class Builder {
@@ -53,18 +40,15 @@ public class LubanOptions implements Serializable {
             options = new LubanOptions();
         }
 
-        public Builder setMaxSize(int maxSize) {
-            options.setMaxSize(maxSize);
+        /**不压缩的阈值，单位为K，默认100*/
+        public Builder setIgnoreSize(int ignoreSize) {
+            options.ignoreSize = ignoreSize;
             return this;
         }
 
-        public Builder setMaxHeight(int maxHeight) {
-            options.setMaxHeight(maxHeight);
-            return this;
-        }
-
-        public Builder setMaxWidth(int maxWidth) {
-            options.setMaxWidth(maxWidth);
+        /**缓存压缩图片路径*/
+        public Builder setTargetDir(String targetDir) {
+            options.targetDir = targetDir;
             return this;
         }
 
