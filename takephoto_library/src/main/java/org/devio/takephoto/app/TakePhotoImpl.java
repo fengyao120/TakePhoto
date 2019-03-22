@@ -260,6 +260,7 @@ public class TakePhotoImpl implements TakePhoto {
 
     @Override
     public void onPickMultiple(int limit) {
+        this.fromType = TImage.FromType.OTHER;
         if (PermissionManager.TPermissionType.WAIT.equals(permissionType)) {
             return;
         }
