@@ -17,7 +17,7 @@
     implementation rootProject.ext.support["appcompat-v7"]//用自己项目中的版本
     implementation rootProject.ext.support["support-v4"]//用自己项目中的版本
 
-	implementation (name: 'takephoto', ext: 'aar')
+    implementation (name: 'takephoto', ext: 'aar')
     implementation 'top.zibin:Luban:1.1.8'//官方鲁班
     implementation ('com.darsh.multipleimageselect:multipleimageselect:1.0.5'){//多图选择库
         exclude group: 'com.android.support'
