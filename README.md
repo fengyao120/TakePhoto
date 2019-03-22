@@ -7,7 +7,7 @@
 - 修正原鲁班压缩成功回调，不在UI线程问题
 - 修正多图选择出现删除原图和来源标识错误问题
 - 升级 gradle 到 3.3.1
-- 升级 compileSdkVersion 和 com.android.support 到28
+- 升级 compileSdkVersion 和 com.android.support 到 28
 ## 使用方式示例
 [takephoto.aar 下载](./takephoto_library/aar/takephoto.aar)
 
@@ -23,7 +23,7 @@
         exclude group: 'com.android.support'
         exclude group: 'com.github.bumptech.glide', module:'glide'
     }
-	implementation ('com.soundcloud.android.crop:lib_crop:1.0.0'){//裁剪库
+    implementation ('com.soundcloud.android.crop:lib_crop:1.0.0'){//裁剪库
         exclude group: 'com.android.support'
     }
     implementation ('com.github.bumptech.glide:glide:4.8.0'){//用自己项目中的版本
